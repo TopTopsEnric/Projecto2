@@ -12,7 +12,7 @@ public class Node
     public bool ingrediente;
     public SpriteRenderer spriteRenderer;
     public BoxCollider collider;
-    private IngredientesSO Ingrediente;
+    private ResourcesSO recurso;
 
     public Node(Vector2Int pos, Vector3 cellSize, bool walkable, int nodeId)
     {
@@ -22,6 +22,9 @@ public class Node
 
         GameObject nodeObject = new GameObject(nodeId.ToString()); // Nombre del GameObject = Número de creación
         nodeObject.transform.position = new Vector3(position.x + 0.5f, position.y + 0.5f, -1); // Centrar el nodo
+
+        nodeObject.tag = "Nodo"; // Asignar la etiqueta "Nodo"
+        nodeObject.layer = 7;
 
         spriteRenderer = nodeObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sortingOrder = 10;
@@ -51,7 +54,7 @@ public class Node
 
     public void radio_efecto(int rango)
     {
-        neighbors.Clear();
+        
         int vecino_lateral_derecho = nodeid + 8 * rango;
         int vecino_lateral_izquierdo = nodeid - 8 * rango;
         int vecino_diagonal_superior_derecho = nodeid + 9 * rango;
@@ -77,6 +80,12 @@ public class Node
 
     public void PasivaIngrediente()
     {
-        Ingrediente.pasiva();
+        for (int i = 1; i < recurso.range; i++)
+        {
+            radio_efecto(i);
+        }
+
+            recurso.ActivarEfecto(neighbors);
+
     }
 }

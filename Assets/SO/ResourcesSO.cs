@@ -10,4 +10,7 @@ public abstract class ResourcesSO : ScriptableObject
     public string Description;
     public float Price;
     public int Limit;
+    public int range;
+    public abstract void ActivarEfecto(List<Node> neighbors);
+    
 }
