@@ -6,7 +6,7 @@ public class AsignarPieza : MonoBehaviour
 {
 
     public NodeMap nodeMap;
-    public Sprite newSprite;
+    public ResourcesSO recurso;
     public int posicion;
     public LayerMask nodosLayer; // Filtrar solo los nodos
 
@@ -35,6 +35,6 @@ public class AsignarPieza : MonoBehaviour
 
     public void cambiarvisual()
     {
-        nodeMap.ChangeNodeSprite(posicion, newSprite);
+        nodeMap.ChangeNodeSprite(posicion, recurso);
     }
 }

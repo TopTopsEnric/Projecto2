@@ -12,7 +12,10 @@ public class Node
     public bool ingrediente;
     public SpriteRenderer spriteRenderer;
     public BoxCollider collider;
+    private MeshFilter meshFilter;
+    private MeshRenderer meshRenderer;
     private ResourcesSO recurso;
+    private bool esmovible;
 
     public Node(Vector2Int pos, Vector3 cellSize, bool walkable, int nodeId)
     {
@@ -30,21 +33,24 @@ public class Node
         spriteRenderer.sortingOrder = 10;
         collider = nodeObject.AddComponent<BoxCollider>();
 
+        meshFilter = nodeObject.AddComponent<MeshFilter>();
+        meshRenderer = nodeObject.AddComponent<MeshRenderer>();
+
         // Ajustar escala del sprite al tamaño de la celda del Tilemap
         nodeObject.transform.localScale = new Vector3(cellSize.x, cellSize.y, 1);
     }
 
-    public void SetSprite(Sprite newSprite)
-    {
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.sprite = newSprite;
-        }
-    }
+    
 
-    public void SetIngrediente(IngredientesSO ingrediente)
+    
+
+    public void SetIngrediente(ResourcesSO ingrediente)
     {
-        this.ingrediente = ingrediente;
+        recurso = ingrediente;
+        spriteRenderer.sprite = recurso.Sprite;
+        meshFilter.mesh = recurso.Mesh;
+        meshRenderer.material = recurso.Material;
+        esmovible = recurso.esmovible;
     }
     public void setterZonas(Dictionary<int, Node> posiciones)
     {
@@ -52,38 +58,57 @@ public class Node
     }
 
 
-    public void radio_efecto(int rango)
+    public void radio_efecto(int rango,int nivel,string forma)
     {
-        
-        int vecino_lateral_derecho = nodeid + 8 * rango;
-        int vecino_lateral_izquierdo = nodeid - 8 * rango;
-        int vecino_diagonal_superior_derecho = nodeid + 9 * rango;
-        int vecino_diagonal_superior_izquierdo = nodeid - 9 * rango;
-        int vecino_diagonal_inferior_derecho = nodeid + 7 * rango;
-        int vecino_diagonal_inferior_izquierdo = nodeid - 7 * rango;
-        int vecino_arriba = nodeid + 1 * rango;
-        int vecino_abajo = nodeid - 1 * rango;
-        List<int> vecinillos = new List<int> { vecino_lateral_derecho, vecino_lateral_izquierdo, vecino_diagonal_superior_derecho, vecino_diagonal_superior_izquierdo, vecino_diagonal_inferior_derecho, vecino_diagonal_inferior_izquierdo };
-        for (int i = 0; i < vecinillos.Count; i++)
+        for (int i = 0; i < nivel; i++)
         {
-            if (zonas[vecinillos[i]] != null)
+            int vecino_lateral_derecho = nodeid + 8 * rango;
+            int vecino_lateral_izquierdo = nodeid - 8 * rango;
+            int vecino_diagonal_superior_derecho = nodeid + 9 * rango;
+            int vecino_diagonal_superior_izquierdo = nodeid - 9 * rango;
+            int vecino_diagonal_inferior_derecho = nodeid + 7 * rango;
+            int vecino_diagonal_inferior_izquierdo = nodeid - 7 * rango;
+            int vecino_arriba = nodeid + 1 * rango;
+            int vecino_abajo = nodeid - 1 * rango;
+            List<int> vecinillos = new List<int>();
+
+            switch (forma)
             {
-                neighbors.Add(zonas[vecinillos[i]]);
+                case "cruz":
+                    vecinillos.AddRange(new int[] { vecino_arriba, vecino_abajo, vecino_lateral_derecho, vecino_lateral_izquierdo });
+                    break;
+                case "x":
+                    vecinillos.AddRange(new int[] { vecino_diagonal_superior_derecho, vecino_diagonal_superior_izquierdo, vecino_diagonal_inferior_derecho, vecino_diagonal_inferior_izquierdo });
+                    break;
+                case "cuadrado":
+                    vecinillos.AddRange(new int[] { vecino_lateral_derecho, vecino_lateral_izquierdo, vecino_diagonal_superior_derecho, vecino_diagonal_superior_izquierdo, vecino_diagonal_inferior_derecho, vecino_diagonal_inferior_izquierdo, vecino_arriba, vecino_abajo });
+                    break;
+                default:
+                    Debug.LogWarning("Forma no reconocida");
+                    break;
             }
-            else
+
+
+            for (int j = 0; j < vecinillos.Count; j++)
             {
-                continue;
+                if (zonas[vecinillos[i]] != null)
+                {
+                    neighbors.Add(zonas[vecinillos[i]]);
+                }
+                else
+                {
+                    continue;
+                }
             }
         }
-
+        
     }
 
     public void PasivaIngrediente()
     {
-        for (int i = 1; i < recurso.range; i++)
-        {
-            radio_efecto(i);
-        }
+        
+            radio_efecto(recurso.range,recurso.nivel,recurso.forma);
+        
 
             recurso.ActivarEfecto(neighbors);
 

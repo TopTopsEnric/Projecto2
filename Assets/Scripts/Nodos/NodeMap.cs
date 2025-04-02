@@ -38,7 +38,7 @@ public class NodeMap : MonoBehaviour
         }
         for (int i = 1; i < nodes.Count; i++)
         {
-            
+
             if (nodes.ContainsKey(i))
             {
                 nodes[i].setterZonas(nodes);
@@ -46,12 +46,22 @@ public class NodeMap : MonoBehaviour
         }
     }
 
+    public void DetectorFormaciones()
+    {
+        for (int i = 1; i < nodes.Count; i++)
+        {
+            
+        }
+    }
+
+    
+
     // Método para cambiar el sprite de un nodo específico por su número de creación
-    public void ChangeNodeSprite(int nodeId, Sprite newSprite)
+    public void ChangeNodeSprite(int nodeId, ResourcesSO recurso)
     {
         if (nodes.ContainsKey(nodeId))
         {
-            nodes[nodeId].SetSprite(newSprite);
+            nodes[nodeId].SetIngrediente(recurso);
         }
     }
 }

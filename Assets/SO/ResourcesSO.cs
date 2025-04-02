@@ -11,6 +11,16 @@ public abstract class ResourcesSO : ScriptableObject
     public float Price;
     public int Limit;
     public int range;
+    public int nivel;
+    public string forma;
+    public Sprite Sprite;
+    public bool esmovible;
+
+    // Datos para modelos 3D
+    public Mesh Mesh;          // Malla del objeto 3D
+    public Material Material;  // Material del objeto 3D
+
+
     public abstract void ActivarEfecto(List<Node> neighbors);
     
 }
