@@ -11,6 +11,9 @@ public class NodeMap : MonoBehaviour
     public int height;
     private int nodeCounter = 1;
 
+    // Referencia al detector de patrones
+    [SerializeField] private PatternDetector patternDetector;
+
     void Start()
     {
         GenerateMapFromTilemap();
@@ -46,15 +49,13 @@ public class NodeMap : MonoBehaviour
         }
     }
 
+    // Método simple que delega la detección de formaciones al PatternDetector
     public void DetectorFormaciones()
     {
-        for (int i = 1; i < nodes.Count; i++)
-        {
-            
-        }
+        patternDetector.DetectarFormaciones(nodes);
     }
 
-    
+
 
     // Método para cambiar el sprite de un nodo específico por su número de creación
     public void ChangeNodeSprite(int nodeId, ResourcesSO recurso)
@@ -62,6 +63,13 @@ public class NodeMap : MonoBehaviour
         if (nodes.ContainsKey(nodeId))
         {
             nodes[nodeId].SetIngrediente(recurso);
+        }
+    }
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            DetectorFormaciones();
         }
     }
 }

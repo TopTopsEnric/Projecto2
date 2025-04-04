@@ -32,6 +32,8 @@ public class Node
         spriteRenderer = nodeObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sortingOrder = 10;
         collider = nodeObject.AddComponent<BoxCollider>();
+        
+
 
         meshFilter = nodeObject.AddComponent<MeshFilter>();
         meshRenderer = nodeObject.AddComponent<MeshRenderer>();
@@ -40,17 +42,33 @@ public class Node
         nodeObject.transform.localScale = new Vector3(cellSize.x, cellSize.y, 1);
     }
 
-    
-
-    
-
-    public void SetIngrediente(ResourcesSO ingrediente)
+    public void destruirIngrediente()
     {
-        recurso = ingrediente;
+        recurso = null;
+        spriteRenderer.sprite = null;
+        //meshFilter.mesh = null;
+        // meshRenderer.material = null;
+        esmovible = false;
+        ingrediente = false;
+        
+    }
+
+
+
+
+    public void SetIngrediente(ResourcesSO so)
+    {
+        if (recurso != null)
+        {
+            destruirIngrediente();
+        }
+        recurso = so;
         spriteRenderer.sprite = recurso.Sprite;
-        meshFilter.mesh = recurso.Mesh;
-        meshRenderer.material = recurso.Material;
+        //meshFilter.mesh = recurso.Mesh;
+       // meshRenderer.material = recurso.Material;
         esmovible = recurso.esmovible;
+        ingrediente = true;
+        
     }
     public void setterZonas(Dictionary<int, Node> posiciones)
     {
@@ -82,6 +100,9 @@ public class Node
                     break;
                 case "cuadrado":
                     vecinillos.AddRange(new int[] { vecino_lateral_derecho, vecino_lateral_izquierdo, vecino_diagonal_superior_derecho, vecino_diagonal_superior_izquierdo, vecino_diagonal_inferior_derecho, vecino_diagonal_inferior_izquierdo, vecino_arriba, vecino_abajo });
+                    break;
+                case "utensilio":
+                    vecinillos.AddRange(new int[] {vecino_arriba, vecino_abajo });
                     break;
                 default:
                     Debug.LogWarning("Forma no reconocida");
