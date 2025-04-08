@@ -15,6 +15,8 @@ public abstract class ResourcesSO : ScriptableObject
     public string forma;
     public Sprite Sprite;
     public bool esmovible;
+    public List<int> niveles_ignorar = new List<int>();
+
 
     // Datos para modelos 3D
     public Mesh Mesh;          // Malla del objeto 3D

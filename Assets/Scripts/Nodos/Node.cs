@@ -1,26 +1,30 @@
 ﻿
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class Node
 {
-    private int nodeid;
-    public Vector2Int position; // Posición en la cuadrícula
+    public int nodeid;
+    public int rango;
+    public string forma;
+    public Vector2Int position; 
     private Dictionary<int, Node> zonas = new Dictionary<int, Node>();
-    public List<Node> neighbors = new List<Node>(); // Conexiones con otros nodos
+    public List<Node> neighbors = new List<Node>(); 
     public bool ingrediente;
     public SpriteRenderer spriteRenderer;
     public BoxCollider collider;
     private MeshFilter meshFilter;
     private MeshRenderer meshRenderer;
-    private ResourcesSO recurso;
+    public  ResourcesSO recurso;
     private bool esmovible;
+    public List<int> saltables = new List<int>();
 
-    public Node(Vector2Int pos, Vector3 cellSize, bool walkable, int nodeId)
+    public Node(Vector2Int pos, Vector3 cellSize, int nodeId)
     {
         position = pos;
-        ingrediente = walkable;
+        
         this.nodeid = nodeId;
 
         GameObject nodeObject = new GameObject(nodeId.ToString()); // Nombre del GameObject = Número de creación
@@ -35,8 +39,8 @@ public class Node
         
 
 
-        meshFilter = nodeObject.AddComponent<MeshFilter>();
-        meshRenderer = nodeObject.AddComponent<MeshRenderer>();
+        //meshFilter = nodeObject.AddComponent<MeshFilter>();
+        //meshRenderer = nodeObject.AddComponent<MeshRenderer>();
 
         // Ajustar escala del sprite al tamaño de la celda del Tilemap
         nodeObject.transform.localScale = new Vector3(cellSize.x, cellSize.y, 1);
@@ -45,93 +49,156 @@ public class Node
     public void destruirIngrediente()
     {
         recurso = null;
-        spriteRenderer.sprite = null;
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.sprite = null;
+        }
+        else
+        {
+            Debug.LogError("spriteRenderer is null in node " + nodeid);
+        }
         //meshFilter.mesh = null;
         // meshRenderer.material = null;
         esmovible = false;
         ingrediente = false;
-        
+        rango = 0;
+        saltables = new List<int>();
+
     }
-
-
-
 
     public void SetIngrediente(ResourcesSO so)
     {
         if (recurso != null)
         {
-            destruirIngrediente();
+            destruirIngrediente();  // Destruir el ingrediente actual si existe
         }
-        recurso = so;
-        spriteRenderer.sprite = recurso.Sprite;
-        //meshFilter.mesh = recurso.Mesh;
-       // meshRenderer.material = recurso.Material;
-        esmovible = recurso.esmovible;
+
+        if (so == null)
+        {
+            Debug.LogError("ResourcesSO is null when setting ingredient for node " + nodeid);
+            return;
+        }
+
+        recurso = so;  // Referencia al recurso original
+
+        // Seteo de los campos visuales
+        if (spriteRenderer != null)
+        {
+            if (so.Sprite == null)
+            {
+                Debug.LogError("Sprite is null in ResourcesSO for node " + nodeid);
+            }
+            else
+            {
+                try
+                {
+                    spriteRenderer.sprite = so.Sprite;
+                   // Debug.Log("Successfully set sprite for node " + nodeid);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError("Error setting sprite: " + e.Message);
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError("spriteRenderer is null in node " + nodeid + " when setting ingredient");
+        }
+
+        // Seteo de los demás campos del ScriptableObject
+        esmovible = so.esmovible;
         ingrediente = true;
-        
+        rango = so.range;
+        saltables = new List<int>(so.niveles_ignorar);
     }
+
     public void setterZonas(Dictionary<int, Node> posiciones)
     {
         zonas = posiciones;
     }
 
 
-    public void radio_efecto(int rango,int nivel,string forma)
+    public void radio_efecto(int rango, string forma, List<int> ignorarNiveles = null)
     {
-        for (int i = 0; i < nivel; i++)
+        neighbors.Clear();
+
+        foreach (var zona in zonas.Values)
         {
-            int vecino_lateral_derecho = nodeid + 8 * rango;
-            int vecino_lateral_izquierdo = nodeid - 8 * rango;
-            int vecino_diagonal_superior_derecho = nodeid + 9 * rango;
-            int vecino_diagonal_superior_izquierdo = nodeid - 9 * rango;
-            int vecino_diagonal_inferior_derecho = nodeid + 7 * rango;
-            int vecino_diagonal_inferior_izquierdo = nodeid - 7 * rango;
-            int vecino_arriba = nodeid + 1 * rango;
-            int vecino_abajo = nodeid - 1 * rango;
-            List<int> vecinillos = new List<int>();
+            if (zona == this) continue; // No añadirse a sí mismo
+
+            int dx = Mathf.Abs(zona.position.x - this.position.x);
+            int dy = Mathf.Abs(zona.position.y - this.position.y);
+
+            int distancia = Mathf.Max(dx, dy); // Distancia tipo "grid" (como en tilemaps)
+
+            if (distancia > rango) continue; // Si está fuera de rango, no lo añado
+
+            if (ignorarNiveles != null && ignorarNiveles.Contains(distancia)) continue;
 
             switch (forma)
             {
                 case "cruz":
-                    vecinillos.AddRange(new int[] { vecino_arriba, vecino_abajo, vecino_lateral_derecho, vecino_lateral_izquierdo });
+                    if ((dx == 0 && dy != 0) || (dx != 0 && dy == 0))
+                        neighbors.Add(zona);
                     break;
+
                 case "x":
-                    vecinillos.AddRange(new int[] { vecino_diagonal_superior_derecho, vecino_diagonal_superior_izquierdo, vecino_diagonal_inferior_derecho, vecino_diagonal_inferior_izquierdo });
+                    if (dx == dy && dx != 0)
+                        neighbors.Add(zona);
                     break;
+
                 case "cuadrado":
-                    vecinillos.AddRange(new int[] { vecino_lateral_derecho, vecino_lateral_izquierdo, vecino_diagonal_superior_derecho, vecino_diagonal_superior_izquierdo, vecino_diagonal_inferior_derecho, vecino_diagonal_inferior_izquierdo, vecino_arriba, vecino_abajo });
+                    if (distancia != 0)
+                    {
+                        neighbors.Add(zona);
+                    }
                     break;
+
                 case "utensilio":
-                    vecinillos.AddRange(new int[] {vecino_arriba, vecino_abajo });
+                    if ((dx == 0 && dy != 0)) // Solo arriba y abajo
+                        neighbors.Add(zona);
                     break;
+
                 default:
                     Debug.LogWarning("Forma no reconocida");
                     break;
             }
-
-
-            for (int j = 0; j < vecinillos.Count; j++)
-            {
-                if (zonas[vecinillos[i]] != null)
-                {
-                    neighbors.Add(zonas[vecinillos[i]]);
-                }
-                else
-                {
-                    continue;
-                }
-            }
         }
-        
+
+        // Solo los de cuadrado quiero que estén ordenados
+        if (forma == "cuadrado")
+        {
+            neighbors = neighbors.OrderBy(n =>
+            {
+                Vector2 dir = new Vector2(n.position.x - this.position.x, n.position.y - this.position.y);
+                float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+                angle = (angle + 360) % 360;
+                return angle;
+            }).ToList();
+        }
     }
 
     public void PasivaIngrediente()
     {
-        
-            radio_efecto(recurso.range,recurso.nivel,recurso.forma);
-        
+
+       
+        if (recurso!=null)
+        {
+            Debug.Log(position);
+            radio_efecto(rango, recurso.forma, saltables);
+            foreach (var item in neighbors)
+            {
+                Debug.Log(item.position);
+            }
+
 
             recurso.ActivarEfecto(neighbors);
-
+        }
+        else
+        {
+            Debug.Log("NODE VACIO");
+        }
+         
     }
 }

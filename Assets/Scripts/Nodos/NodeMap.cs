@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class NodeMap : MonoBehaviour
 {
@@ -33,7 +34,7 @@ public class NodeMap : MonoBehaviour
                 if (tilemap.HasTile(tilePosition))
                 {
                     Vector3 nodePosition = tilemap.GetCellCenterWorld(tilePosition);
-                    Node newNode = new Node(new Vector2Int(x, y), cellSize, false, nodeCounter);
+                    Node newNode = new Node(new Vector2Int(x, y), cellSize, nodeCounter);
                     nodes.Add(nodeCounter, newNode);
                     nodeCounter++;
                 }
@@ -55,6 +56,15 @@ public class NodeMap : MonoBehaviour
         patternDetector.DetectarFormaciones(nodes);
     }
 
+    public void ejecutarPasiva()
+    {
+        foreach (var node in nodes)
+        {
+            //Debug.Log(node);
+            node.Value.PasivaIngrediente();
+        }
+    }
+
 
 
     // Método para cambiar el sprite de un nodo específico por su número de creación
@@ -70,6 +80,10 @@ public class NodeMap : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.P))
         {
             DetectorFormaciones();
+        }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            ejecutarPasiva();
         }
     }
 }

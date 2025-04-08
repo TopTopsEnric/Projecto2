@@ -69,7 +69,7 @@ public class PatternDetector : MonoBehaviour
     // Método principal que se llamará desde NodeMap
     public void DetectarFormaciones(Dictionary<int, Node> nodes)
     {
-        // Para cada patrón, intentamos detectarlo en el mapa
+        Debug.Log("se esta iniciando el escaneo de formaciones");
         foreach (var pattern in patterns)
         {
             DetectarPatron(pattern, nodes);
@@ -176,18 +176,12 @@ public class PatternDetector : MonoBehaviour
         return transformed;
     }
 
-    // Helper para obtener el ResourcesSO asociado a un nodo
     private ResourcesSO GetNodeResource(Node node)
     {
-        // Acceder al recurso del nodo mediante reflexión ya que es privado
-        Type nodeType = typeof(Node);
-        FieldInfo recursoField = nodeType.GetField("recurso", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        if (recursoField != null)
+        if(node.recurso != null)
         {
-            return recursoField.GetValue(node) as ResourcesSO;
+            return node.recurso;
         }
-
         return null;
     }
 
