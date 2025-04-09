@@ -12,6 +12,7 @@ public abstract class ResourcesSO : ScriptableObject
     public int Limit;
     public int range;
     public int nivel;
+    public float vida;
     public string forma;
     public Sprite Sprite;
     public bool esmovible;

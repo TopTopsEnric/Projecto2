@@ -8,6 +8,7 @@ public class Node
 {
     public int nodeid;
     public int rango;
+    public float vida;
     public string forma;
     public Vector2Int position; 
     private Dictionary<int, Node> zonas = new Dictionary<int, Node>();
@@ -18,7 +19,7 @@ public class Node
     private MeshFilter meshFilter;
     private MeshRenderer meshRenderer;
     public  ResourcesSO recurso;
-    private bool esmovible;
+    public bool esmovible;
     public List<int> saltables = new List<int>();
 
     public Node(Vector2Int pos, Vector3 cellSize, int nodeId)
@@ -110,6 +111,7 @@ public class Node
         esmovible = so.esmovible;
         ingrediente = true;
         rango = so.range;
+        vida = so.vida;
         saltables = new List<int>(so.niveles_ignorar);
     }
 
@@ -175,6 +177,19 @@ public class Node
                 float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
                 angle = (angle + 360) % 360;
                 return angle;
+            }).ToList();
+        }
+        else if (forma == "cruz")
+        {
+            neighbors = neighbors.OrderBy(n =>
+            {
+                // Primero ordenamos para que el nodo de arriba sea el primero
+                // Si y es menor (está arriba), tendrá prioridad más alta
+                // Luego ordenamos por x para manejar los nodos laterales
+                if (n.position.y < this.position.y) return 0; // Arriba (prioridad máxima)
+                if (n.position.y > this.position.y) return 2; // Abajo
+                if (n.position.x < this.position.x) return 1; // Izquierda
+                return 3; // Derecha
             }).ToList();
         }
     }
