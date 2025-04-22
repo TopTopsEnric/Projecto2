@@ -7,11 +7,12 @@ using UnityEngine;
 public class Node
 {
     public int nodeid;
+    public NodeMap nodemap;
     public int rango;
     public float vida;
     public string forma;
     public Vector2Int position; 
-    private Dictionary<int, Node> zonas = new Dictionary<int, Node>();
+    public Dictionary<int, Node> zonas = new Dictionary<int, Node>();
     public List<Node> neighbors = new List<Node>(); 
     public bool ingrediente;
     public SpriteRenderer spriteRenderer;
@@ -21,30 +22,77 @@ public class Node
     public  ResourcesSO recurso;
     public bool esmovible;
     public List<int> saltables = new List<int>();
+    public List<EfectoTemporal> efectosTemporales = new List<EfectoTemporal>();
+    public SpriteRenderer utensilioSpriteRenderer;
 
-    public Node(Vector2Int pos, Vector3 cellSize, int nodeId)
+    public Node(Vector3 worldPosition,Vector2Int pos, Vector3 cellSize, int nodeId, NodeMap nodemap)
     {
         position = pos;
-        
         this.nodeid = nodeId;
+        this.nodemap = nodemap;
+        GameObject nodeObject = new GameObject(nodeId.ToString());
+        nodeObject.transform.position = worldPosition; 
 
-        GameObject nodeObject = new GameObject(nodeId.ToString()); // Nombre del GameObject = Número de creación
-        nodeObject.transform.position = new Vector3(position.x + 0.5f, position.y + 0.5f, -1); // Centrar el nodo
+        nodeObject.tag = "Nodo";
+        nodeObject.layer = nodemap.layer;
 
-        nodeObject.tag = "Nodo"; // Asignar la etiqueta "Nodo"
-        nodeObject.layer = 7;
-
+        // Crear spriteRenderer para ingrediente primero
         spriteRenderer = nodeObject.AddComponent<SpriteRenderer>();
-        spriteRenderer.sortingOrder = 10;
+        spriteRenderer.sortingLayerName = "Default";  // Misma capa para ambos
+        spriteRenderer.sortingOrder = 2;               // Orden 2 para ingrediente
+
+        // Crear GameObject hijo para utensilio
+        GameObject utensilioObject = new GameObject("UtensilioSprite");
+        utensilioObject.layer = nodemap.layer;
+        utensilioObject.transform.parent = nodeObject.transform;
+        utensilioObject.transform.localPosition = Vector3.zero;
+
+        // Crear spriteRenderer para utensilio
+        utensilioSpriteRenderer = utensilioObject.AddComponent<SpriteRenderer>();
+        utensilioSpriteRenderer.sortingLayerName = "Default";  // Misma capa
+        utensilioSpriteRenderer.sortingOrder = 3;               // Orden 3 para utensilio (encima)
+        utensilioSpriteRenderer.enabled = false;
+
         collider = nodeObject.AddComponent<BoxCollider>();
-        
 
-
-        //meshFilter = nodeObject.AddComponent<MeshFilter>();
-        //meshRenderer = nodeObject.AddComponent<MeshRenderer>();
-
-        // Ajustar escala del sprite al tamaño de la celda del Tilemap
         nodeObject.transform.localScale = new Vector3(cellSize.x, cellSize.y, 1);
+    }
+
+    public void AgregarEfectoTemporal(Efectos efecto, int duracion)
+    {
+        efectosTemporales.Add(new EfectoTemporal(efecto, duracion));
+    }
+
+    public void SetUtensilioVisual(ResourcesSO utensilio)
+    {
+        if (utensilio != null && utensilio.Sprite != null)
+        {
+            utensilioSpriteRenderer.sprite = utensilio.Sprite;
+            utensilioSpriteRenderer.enabled = true;
+        }
+        else
+        {
+            utensilioSpriteRenderer.sprite = null;
+            utensilioSpriteRenderer.enabled = false;
+        }
+    }
+
+    public void AplicarEfectosTemporales()
+    {
+        for (int i = efectosTemporales.Count - 1; i >= 0; i--)
+        {
+            var efecto = efectosTemporales[i];
+
+            // Ejecutar el efecto si tiene lógica de ejecución por turno
+            efecto.efecto.EjecutarTurno(this);
+
+            efecto.turnosRestantes--;
+
+            if (efecto.turnosRestantes <= 0)
+            {
+                efectosTemporales.RemoveAt(i);
+            }
+        }
     }
 
     public void destruirIngrediente()
@@ -183,13 +231,10 @@ public class Node
         {
             neighbors = neighbors.OrderBy(n =>
             {
-                // Primero ordenamos para que el nodo de arriba sea el primero
-                // Si y es menor (está arriba), tendrá prioridad más alta
-                // Luego ordenamos por x para manejar los nodos laterales
-                if (n.position.y < this.position.y) return 0; // Arriba (prioridad máxima)
-                if (n.position.y > this.position.y) return 2; // Abajo
+                if (n.position.y > this.position.y) return 0; // Abajo (prioridad máxima)
                 if (n.position.x < this.position.x) return 1; // Izquierda
-                return 3; // Derecha
+                if (n.position.x > this.position.x) return 2; // Derecha
+                return 3; // Arriba
             }).ToList();
         }
     }
@@ -204,11 +249,11 @@ public class Node
             radio_efecto(rango, recurso.forma, saltables);
             foreach (var item in neighbors)
             {
-                Debug.Log(item.position);
+                //Debug.Log(item.position);
             }
 
 
-            recurso.ActivarEfecto(neighbors);
+            recurso.ActivarEfecto(neighbors, this); 
         }
         else
         {

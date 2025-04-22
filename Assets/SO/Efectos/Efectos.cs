@@ -5,5 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New efecto", menuName = "Tools/resources/efectos")]
 public abstract class Efectos : ResourcesSO
 {
-   
+    public virtual void EjecutarTurno(Node nodo) { }
+
 }

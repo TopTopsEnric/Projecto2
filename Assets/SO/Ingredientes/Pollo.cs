@@ -6,7 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Pollo", menuName = "Tools/resources/Ingredients/Pollo")]
 public class Pollo : IngredientesSO
 {
-    public override void ActivarEfecto(List<Node> neighbors)
+    public override void ActivarEfecto(List<Node> neighbors, Node nodoOrigen)
     {
         Debug.Log("Ejecutando la pasiva de pollo");
 
@@ -32,7 +32,7 @@ public class Pollo : IngredientesSO
             int nextIndex = (i + 1) % nodeArray.Length;
 
             // Si el nodo actual tiene un ingrediente, intentamos moverlo
-            if (currentState[nodeArray[currentIndex].nodeid] != null)
+            if (currentState[nodeArray[currentIndex].nodeid] != null )
             {
                 // Si el siguiente nodo está vacío, movemos el ingrediente allí
                 if (currentState[nodeArray[nextIndex].nodeid] == null)

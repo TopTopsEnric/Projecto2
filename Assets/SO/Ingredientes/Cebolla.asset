@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: Cebolla
   m_EditorClassIdentifier: 
   Name: cebolla
-  Description: lloraras
+  Description: te da una bonificacion si no hay objetos en su rango
   Price: 0
   Limit: 0
-  range: 0
+  range: 2
   nivel: 0
-  forma: 
-  Sprite: {fileID: 6349360267525728516, guid: be785b53e8101134cb49e391918a7a82, type: 3}
+  vida: 0
+  forma: cuadrado
+  Sprite: {fileID: -488516038, guid: a03e9228371be9449a97a937850924ca, type: 3}
   esmovible: 0
+  niveles_ignorar: 
   Mesh: {fileID: 0}
   Material: {fileID: 0}

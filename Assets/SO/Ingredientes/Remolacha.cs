@@ -4,7 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Remolacha", menuName = "Tools/resources/Ingredients/Remolacha")]
 public class Remolacha : IngredientesSO
 {
-    public override void ActivarEfecto(List<Node> neighbors)
+    public override void ActivarEfecto(List<Node> neighbors, Node nodoOrigen)
     {
 
     }

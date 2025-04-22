@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddacda7c0c831614183b2a407fc0f9b2, type: 3}
+  m_Name: Maiz
+  m_EditorClassIdentifier: 
+  Name: Maiz
+  Description: Fuente extra de dinero
+  Price: 0
+  Limit: 0
+  range: 2
+  nivel: 0
+  vida: 1
+  forma: x
+  Sprite: {fileID: -1298726014, guid: a03e9228371be9449a97a937850924ca, type: 3}
+  esmovible: 1
+  niveles_ignorar: 
+  Mesh: {fileID: 0}
+  Material: {fileID: 0}

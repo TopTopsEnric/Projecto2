@@ -4,28 +4,32 @@ using UnityEngine;
 
 public class Economia : MonoBehaviour
 {
-    public float money = 0;
-    private int cebolla = 1;
+    public float money = 100; // dinero inicial
+    public int cebolla = 1;
 
-    public void more_money(float incremeneto)
+    public bool PuedePagar(float cantidad)
     {
-
-        money += incremeneto*1;
+        return money >= cantidad;
     }
 
-    public void less_money(float restante)
+    public void MoreMoney(float incremento)
     {
-        money -= restante;
+        money += incremento*cebolla;
     }
 
-    public void activarefectoCebolla()
+    public void LessMoney(float gasto)
+    {
+        money -= gasto;
+        if (money < 0) money = 0;
+    }
+
+    public void ActivarEfectoCebolla()
     {
         cebolla = 2;
     }
-    public void desactivarefectoCebolla()
+
+    public void DesactivarEfectoCebolla()
     {
         cebolla = 1;
     }
-
-
 }

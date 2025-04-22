@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a86719fb434a5f44b6a123820a6ad3b, type: 3}
+  m_Name: Rodillo
+  m_EditorClassIdentifier: 
+  Name: Rodillo
+  Description: 
+  Price: 0
+  Limit: 0
+  range: 0
+  nivel: 0
+  vida: 0
+  forma: 
+  Sprite: {fileID: 1393970119, guid: a03e9228371be9449a97a937850924ca, type: 3}
+  esmovible: 0
+  niveles_ignorar: 
+  Mesh: {fileID: 0}
+  Material: {fileID: 0}
+  haciaDerecha: 0

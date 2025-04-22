@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Queso", menuName = "Tools/resources/Ingredients/Queso")]
 public class Queso : IngredientesSO
 {
-    public override void ActivarEfecto(List<Node> neighbors)
+    public override void ActivarEfecto(List<Node> neighbors, Node nodoOrigen)
     {
         for (int i = 0; i < neighbors.Count; i++)
         {

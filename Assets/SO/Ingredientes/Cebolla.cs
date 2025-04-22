@@ -5,15 +5,37 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Cebolla", menuName = "Tools/resources/Ingredients/Cebolla")]
 public class Cebolla : IngredientesSO
 {
-     public Economia economia;
-    public override void ActivarEfecto(List<Node> neighbors)
+    public override void ActivarEfecto(List<Node> neighbors, Node nodoOrigen)
     {
-        if (neighbors.Count == 0) {
-            economia.activarefectoCebolla();
-        }
-        else {
-            economia.desactivarefectoCebolla();
+        Economia economiaJugador = nodoOrigen.nodemap.economiaJugador;
+
+        if (economiaJugador == null)
+        {
+            Debug.LogError("EconomiaJugador no asignada en NodeMap.");
+            return;
         }
 
+        // Ahora usas economiaJugador para modificar dinero o activar efectos
+        bool limpio = true;
+        foreach (var vecino in neighbors)
+        {
+            if (vecino.ingrediente)
+            {
+                limpio = false;
+                break;
+            }
+        }
+
+        if (limpio)
+        {
+            economiaJugador.ActivarEfectoCebolla();
+            Debug.Log("Efecto cebolla activado");
+        }
+        else
+        {
+            economiaJugador.DesactivarEfectoCebolla();
+            Debug.Log("Efecto cebolla desactivado");
+        }
     }
+
 }

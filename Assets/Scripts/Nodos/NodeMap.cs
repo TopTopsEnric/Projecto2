@@ -7,14 +7,21 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class NodeMap : MonoBehaviour
 {
     public Tilemap tilemap;
+    public int jugadorId;
+    public int layer;
+    public Economia economiaJugador;
     public Dictionary<int, Node> nodes = new Dictionary<int, Node>();
     public int width;
     public int height;
     private int nodeCounter = 1;
+    
 
     // Referencia al detector de patrones
     [SerializeField] private PatternDetector patternDetector;
-
+    void Awake()
+    {
+        Utensilio.nodeMap = this; 
+    }
     void Start()
     {
         GenerateMapFromTilemap();
@@ -34,7 +41,7 @@ public class NodeMap : MonoBehaviour
                 if (tilemap.HasTile(tilePosition))
                 {
                     Vector3 nodePosition = tilemap.GetCellCenterWorld(tilePosition);
-                    Node newNode = new Node(new Vector2Int(x, y), cellSize, nodeCounter);
+                    Node newNode = new Node(nodePosition,new Vector2Int(x, y), cellSize, nodeCounter,this);
                     nodes.Add(nodeCounter, newNode);
                     nodeCounter++;
                 }
@@ -65,6 +72,14 @@ public class NodeMap : MonoBehaviour
         }
     }
 
+    public void EjecutarEfectosTemporales()
+    {
+        foreach (var node in nodes.Values)
+        {
+            node.AplicarEfectosTemporales();
+        }
+    }
+
 
 
     // Método para cambiar el sprite de un nodo específico por su número de creación
@@ -84,6 +99,12 @@ public class NodeMap : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.L))
         {
             ejecutarPasiva();
+        }
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            EjecutarEfectosTemporales();
+            
         }
     }
 }

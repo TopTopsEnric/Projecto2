@@ -5,20 +5,22 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Ternera", menuName = "Tools/resources/Ingredients/Ternera")]
 public class Ternera : IngredientesSO
 {
-    public override void ActivarEfecto(List<Node> neighbors)
+    public override void ActivarEfecto(List<Node> neighbors, Node nodoOrigen)
     {
-        for (int i = 0; i < neighbors.Count; i++)
-        {
-            Node node = neighbors[i];
-            if (i == 0) { 
-                node.vida += 1;
-            }
-            ResourcesSO recurso = node.recurso;
+        Debug.Log("PasivaIngrediente ternera llamada");
+        
 
-            if (recurso != null)
+        Node node = neighbors[0];
+        
+        Debug.Log("tiene ingrediente el nodo?" + node.ingrediente);
+            if (node.ingrediente)
             {
-                node.rango = node.rango + 1;
+            node.vida += 1;
+            node.esmovible = false;
+            Debug.Log("Se ha activado el efecto de Ternera " + node.esmovible + "y el efecto de vida" + node.vida);
             }
-        }
+
+
+
     }
 }

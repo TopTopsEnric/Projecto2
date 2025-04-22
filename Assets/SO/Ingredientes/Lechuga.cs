@@ -6,7 +6,7 @@ using UnityEngine;
 public class Lechuga : IngredientesSO
 {
     
-    public override void ActivarEfecto(List<Node> neighbors)
+    public override void ActivarEfecto(List<Node> neighbors, Node nodoOrigen)
     {
 
     }

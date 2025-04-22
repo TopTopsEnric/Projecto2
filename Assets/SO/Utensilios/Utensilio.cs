@@ -6,5 +6,7 @@ using UnityEngine;
 
 public abstract class Utensilio : ResourcesSO
 {
-   
+    public static NodeMap nodeMap;
+    public virtual int nodosRequeridos => 1;
+
 }

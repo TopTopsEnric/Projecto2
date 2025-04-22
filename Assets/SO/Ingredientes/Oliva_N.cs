@@ -6,7 +6,7 @@ using UnityEngine;
 public class Oliva_N : IngredientesSO
 {
     
-    public override void ActivarEfecto(List<Node> neighbors)
+    public override void ActivarEfecto(List<Node> neighbors, Node nodoOrigen)
     {
         for (int i = 0; i < neighbors.Count; i++)
         {

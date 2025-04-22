@@ -24,6 +24,6 @@ public abstract class ResourcesSO : ScriptableObject
     public Material Material;  // Material del objeto 3D
 
 
-    public abstract void ActivarEfecto(List<Node> neighbors);
+    public abstract void ActivarEfecto(List<Node> neighbors, Node nodoOrigen);
     
 }
