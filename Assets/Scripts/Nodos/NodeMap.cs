@@ -90,22 +90,6 @@ public class NodeMap : MonoBehaviour
             nodes[nodeId].SetIngrediente(recurso);
         }
     }
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            DetectorFormaciones();
-        }
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            ejecutarPasiva();
-        }
-
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            EjecutarEfectosTemporales();
-            
-        }
-    }
+    
 }
 

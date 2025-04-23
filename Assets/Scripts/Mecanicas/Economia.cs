@@ -6,6 +6,7 @@ public class Economia : MonoBehaviour
 {
     public float money = 100; // dinero inicial
     public int cebolla = 1;
+    public AsignarPieza pieza;
 
     public bool PuedePagar(float cantidad)
     {

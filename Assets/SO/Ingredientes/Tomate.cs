@@ -15,30 +15,29 @@ public class Tomate : IngredientesSO
 
     private AsignarPieza piezas;
 
-    private void BuscaPiezas()
-    {
-        if (piezas == null)
-        {
-            piezas = UnityEngine.Object.FindObjectOfType<AsignarPieza>();
-            if (piezas == null)
-            {
-                Debug.LogError("No se encontró un componente Asignar en la escena.");
-            }
-        }
-    }
+    
 
     public override void ActivarEfecto(List<Node> neighbors, Node nodoOrigen)
     {
-        BuscaPiezas();
+        piezas = nodoOrigen.nodemap.economiaJugador.pieza;
         nodosResaltados.Clear();
-
         foreach (var item in neighbors)
         {
+            if (item == null)
+            {
+                Debug.LogWarning("Un item en neighbors es null.");
+                continue;
+            }
+
             if (!item.ingrediente)
             {
                 nodosResaltados.Add(item);
 
-                if (item.spriteRenderer != null)
+                if (item.spriteRenderer == null)
+                {
+                    Debug.LogWarning($"El nodo {item.recurso.name} no tiene spriteRenderer.");
+                }
+                else
                 {
                     if (item.spriteRenderer.sprite == null && marcadorVisual != null)
                     {
@@ -48,15 +47,18 @@ public class Tomate : IngredientesSO
                     item.spriteRenderer.color = Color.red;
                 }
 
-                if (item.collider != null && item.collider.GetComponent<NodeClickHandler>() == null)
+                if (item.collider == null)
+                {
+                    Debug.LogWarning($"El nodo {item.recurso.name} no tiene collider.");
+                }
+                else if (item.collider.GetComponent<NodeClickHandler>() == null)
                 {
                     piezas.inputHabilitado = false;
                     var clickHandler = item.collider.gameObject.AddComponent<NodeClickHandler>();
-                    clickHandler.Init(item, nodoOrigen, this,piezas);
+                    clickHandler.Init(item, nodoOrigen, this, piezas);
                 }
             }
         }
-
         if (nodosResaltados.Count == 0)
         {
             Debug.Log("No hay nodos vecinos disponibles");

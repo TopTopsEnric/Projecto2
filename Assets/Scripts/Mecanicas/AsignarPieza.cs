@@ -40,16 +40,6 @@ public class AsignarPieza : MonoBehaviour
         {
             DetectarNodo();
         }
-
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            EjecutarAccionesPendientes();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            LimpiarSeleccion();
-        }
     }
 
     public void SetRecurso(ResourcesSO nuevoRecurso)
@@ -104,19 +94,30 @@ public class AsignarPieza : MonoBehaviour
 
     public void DetectarNodo()
     {
-        Debug.Log("DetectarNodo llamado");  
+        // Muestra un mensaje en la consola para confirmar que se llamó al método
+        Debug.Log("DetectarNodo llamado");
+
+        // Si no hay selección activa o no hay recurso seleccionado, salir del método
         if (tipoSeleccionActual == TipoSeleccion.Ninguno || recurso == null) return;
-        Debug.Log("no esta nada vacio el recurso");
+
+        // Crea una máscara de capas para que solo se detecten objetos en las capas "Water" y "Ignore Raycast"
         int layerMask = LayerMask.GetMask("Water", "Ignore Raycast");
+
+        // Lanza un rayo desde la cámara del jugador hacia donde está el mouse
         Ray ray = camaraJugador.ScreenPointToRay(Input.mousePosition);
+
+        // Si el rayo impacta con algo en las capas seleccionadas...
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
         {
+            // Verifica que el objeto tocado tenga el tag "Nodo"
             if (hit.collider.CompareTag("Nodo"))
             {
+                // Obtiene la posición del nodo a partir del nombre del GameObject
                 int nodoPosicion = int.Parse(hit.collider.gameObject.name);
 
                 Node nodo = null;
 
+                // Busca el nodo en el diccionario de nodos del mapa del jugador
                 if (nodeMapPropio.nodes.ContainsKey(nodoPosicion))
                 {
                     nodo = nodeMapPropio.nodes[nodoPosicion];
@@ -127,14 +128,14 @@ public class AsignarPieza : MonoBehaviour
                     return;
                 }
 
-                // Verificar si el jugador tiene suficiente dinero para colocar el recurso
+                // Verifica si el jugador tiene suficiente dinero para colocar el recurso
                 if (!economiaJugador.PuedePagar(recurso.Price))
                 {
                     Debug.Log("No tienes suficiente dinero para colocar este recurso.");
                     return;
                 }
 
-                // Validaciones según tipoSeleccionActual y recurso
+                // Valida si el recurso es del tipo correcto según la fase de selección
                 if (tipoSeleccionActual == TipoSeleccion.Ingrediente)
                 {
                     if (!(recurso is IngredientesSO))
@@ -160,7 +161,7 @@ public class AsignarPieza : MonoBehaviour
                     }
                 }
 
-                // Si es utensilio y requiere varios nodos, manejar selección múltiple
+                // Si es un utensilio, puede requerir varios nodos. Se calcula cuántos nodos necesita.
                 int maxNodos = 1;
                 if (tipoSeleccionActual == TipoSeleccion.Utensilio)
                 {
@@ -171,19 +172,21 @@ public class AsignarPieza : MonoBehaviour
                     }
                 }
 
+                // Si el nodo aún no está en la lista de seleccionados
                 if (!nodosSeleccionados.Contains(nodo))
                 {
+                    // Si no se ha alcanzado el límite de nodos requeridos
                     if (nodosSeleccionados.Count < maxNodos)
                     {
+                        // Se añade el nodo a la lista de seleccionados
                         nodosSeleccionados.Add(nodo);
                         Debug.Log("Nodo seleccionado: " + nodoPosicion);
 
-                        cambiarvisual();
+                        cambiarvisual(); // Actualiza visualmente los nodos seleccionados
 
-                        // Si ya se seleccionaron todos los nodos requeridos, aplicar el recurso
+                        // Si es ingrediente o efecto, se coloca inmediatamente
                         if (tipoSeleccionActual == TipoSeleccion.Ingrediente || tipoSeleccionActual == TipoSeleccion.Efecto)
                         {
-                            // Descontar dinero y aplicar recurso
                             economiaJugador.LessMoney(recurso.Price);
 
                             if (tipoSeleccionActual == TipoSeleccion.Ingrediente)
@@ -195,8 +198,9 @@ public class AsignarPieza : MonoBehaviour
                                 ((Efectos)recurso).ActivarEfecto(null, nodo);
                             }
 
-                            LimpiarSeleccion();
+                            LimpiarSeleccion(); // Limpia la selección tras aplicar
                         }
+                        // Si es un utensilio y ya están todos los nodos seleccionados
                         else if (tipoSeleccionActual == TipoSeleccion.Utensilio && nodosSeleccionados.Count == maxNodos)
                         {
                             economiaJugador.LessMoney(recurso.Price);
@@ -256,7 +260,10 @@ public class AsignarPieza : MonoBehaviour
 
     public void EjecutarAccionesPendientes()
     {
-        EjecutarTurno();
+        nodeMapPropio.DetectorFormaciones();
+        nodeMapPropio.ejecutarPasiva();
+        nodeMapPropio.EjecutarEfectosTemporales();
+        EjecutarEfectoBlanco();
         if (accionesUtensiliosPendientes.Count == 0)
         {
             Debug.Log("No hay acciones pendientes para ejecutar.");
@@ -286,7 +293,7 @@ public class AsignarPieza : MonoBehaviour
         Debug.Log("Todas las acciones pendientes han sido ejecutadas.");
     }
 
-    public void EjecutarTurno()
+    public void EjecutarEfectoBlanco()
     {
         // Ejecutar efectos activos de S_Blanca
         for (int i = efectosBlancosActivos.Count - 1; i >= 0; i--)
@@ -307,7 +314,7 @@ public class AsignarPieza : MonoBehaviour
             }
         }
 
-        // Aquí puedes añadir la ejecución de otros efectos temporales o acciones pendientes
+        
     }
 
     public void LimpiarSeleccion()
