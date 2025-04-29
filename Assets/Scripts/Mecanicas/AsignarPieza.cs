@@ -100,8 +100,7 @@ public class AsignarPieza : MonoBehaviour
         // Si no hay selección activa o no hay recurso seleccionado, salir del método
         if (tipoSeleccionActual == TipoSeleccion.Ninguno || recurso == null) return;
 
-        // Crea una máscara de capas para que solo se detecten objetos en las capas "Water" y "Ignore Raycast"
-        int layerMask = LayerMask.GetMask("Water", "Ignore Raycast");
+        
 
         // Lanza un rayo desde la cámara del jugador hacia donde está el mouse
         Ray ray = camaraJugador.ScreenPointToRay(Input.mousePosition);
@@ -112,21 +111,11 @@ public class AsignarPieza : MonoBehaviour
             // Verifica que el objeto tocado tenga el tag "Nodo"
             if (hit.collider.CompareTag("Nodo"))
             {
-                // Obtiene la posición del nodo a partir del nombre del GameObject
-                int nodoPosicion = int.Parse(hit.collider.gameObject.name);
+                
 
                 Node nodo = null;
 
-                // Busca el nodo en el diccionario de nodos del mapa del jugador
-                if (nodeMapPropio.nodes.ContainsKey(nodoPosicion))
-                {
-                    nodo = nodeMapPropio.nodes[nodoPosicion];
-                }
-                else
-                {
-                    Debug.LogWarning("Nodo no pertenece al tablero propio.");
-                    return;
-                }
+                
 
                 // Verifica si el jugador tiene suficiente dinero para colocar el recurso
                 if (!economiaJugador.PuedePagar(recurso.Price))
